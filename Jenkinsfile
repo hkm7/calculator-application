@@ -1,62 +1,56 @@
-// Jenkinsfile
+@Library('python-shared-library') _
+
 pipeline {
     agent any
-    
+    environment {
+        DOCKER_IMAGE = "my-calculator-app"
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
+    }
     stages {
-        stage('Setup') {
-            steps {
-                echo "Setting up Python environment and installing dependencies"
-                sh '''
-                    python3 --version
-                    pip3 install -r requirements.txt --break-system-packages
-                '''
+        stage('checkout'){
+            steps{
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-key', url: 'https://github.com/hkm7/calculator-application']])
             }
         }
-        
+        stage('Install dependencies') {
+            steps {
+                install_dependencies()
+            }
+        }
         stage('Test') {
             steps {
-                echo "Running tests with pytest"
-                sh 'python3 -m pytest test.py -v'
+                test()
             }
         }
-        
-        stage('Run App') {
+        stage('deploy') {
             steps {
-                echo "Application is ready to run"
-                sh 'echo "Calculator app is working! Tests passed successfully."'
+              sh "docker build -t myapp ."
+                // def image = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                // sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
+                // docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
             }
         }
-        
-        stage('Deploy') {
-            steps {
-                script {
-                    if (env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master') {
-                        echo "🚀 Deploying to PRODUCTION environment"
-                        echo "All calculator functions are available in production!"
-                    } else if (env.BRANCH_NAME == 'staging') {
-                        echo "🔄 Deploying to STAGING environment" 
-                        echo "Testing calculator functions in staging before production"
-                    } else if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME.startsWith('feature/')) {
-                        echo "🔧 Deploying to DEVELOPMENT environment"
-                        echo "Calculator is ready for development testing"
-                    } else {
-                        echo "📦 Building for branch: ${env.BRANCH_NAME}"
-                        echo "Calculator built successfully"
-                    }
-                }
-            }
-        }
+        // stage('Test Image') {
+        //     // steps {
+        //     //     // script {
+        //     //     //     // Run basic tests on the image
+        //     //     //     sh """
+        //     //     //         docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} echo "Image test successful"
+        //     //     //     """
+        //     //     // }
+        //     // }
+        // }
     }
-    
     post {
         always {
-            echo "Pipeline finished for branch: ${env.BRANCH_NAME}"
+            echo "🧹 Cleaning up workspace..."
+            cleanWs()
         }
         success {
-            echo "✅ Build successful! Calculator is working perfectly."
+            echo "✅ Python Calculator pipeline completed successfully!"
         }
         failure {
-            echo "❌ Build failed. Please check the logs and fix any issues."
+            echo "❌ Python Calculator pipeline failed!"
         }
     }
 }
