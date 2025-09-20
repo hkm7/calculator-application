@@ -24,7 +24,7 @@ pipeline {
         }
         stage('deploy') {
             steps {
-              sh "docker build -t myapp ."
+              sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 // def image = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
                 // sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
                 // docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
