@@ -43,14 +43,13 @@ pipeline {
     }
     post {
         always {
-            echo "🧹 Cleaning up workspace..."
-            cleanWs()
+            slackSend channel: '#jenkins-notifications', color: 'warn', message: 'Pipeline finished for branch: ${env.BRANCH_NAME}!!!'
         }
         success {
-            echo "✅ Python Calculator pipeline completed successfully!"
+            slackSend channel: '#jenkins-notifications', color: 'good', message: '✅ Build successful! Calculator is working perfectly.'
         }
         failure {
-            echo "❌ Python Calculator pipeline failed!"
+            slackSend channel: '#jenkins-notifications', color: 'danger', message: '❌ Build failed. Please check the logs and fix any issues.'
         }
     }
 }
