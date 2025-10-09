@@ -43,13 +43,13 @@ pipeline {
     }
     post {
         always {
-            slackSend channel: '#jenkins-notifications', color: 'warn', message: 'Pipeline finished for branch: ${env.BRANCH_NAME}!!!'
+            slackSend channel: '#jenkins-notifications', color: 'warn', message: 'Calculator application: Pipeline finished for branch: main'
         }
         success {
-            slackSend channel: '#jenkins-notifications', color: 'good', message: '✅ Build successful! Calculator is working perfectly.'
+            slackSend channel: '#jenkins-notifications', color: 'good', message: 'Calculator application: ✅ Build successful! Calculator is working perfectly. (main)'
         }
         failure {
-            slackSend channel: '#jenkins-notifications', color: 'danger', message: '❌ Build failed. Please check the logs and fix any issues.'
+            slackSend channel: '#jenkins-notifications', color: 'danger', message: 'Calculator application: ❌ Build failed. Please check the logs and fix any issues.(main)'
         }
     }
 }
