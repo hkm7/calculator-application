@@ -55,13 +55,13 @@ pipeline {
     
     post {
         always {
-            echo "Pipeline finished for branch: ${env.BRANCH_NAME}"
+            slackSend channel: '#jenkins-notifications', color: 'warn', message: 'Pipeline finished for branch: ${env.BRANCH_NAME}!!!'
         }
         success {
-            echo "✅ Build successful! Calculator is working perfectly."
+            slackSend channel: '#jenkins-notifications', color: 'good', message: '✅ Build successful! Calculator is working perfectly.'
         }
         failure {
-            echo "❌ Build failed. Please check the logs and fix any issues."
+            slackSend channel: '#jenkins-notifications', color: 'danger', message: '❌ Build failed. Please check the logs and fix any issues.'
         }
     }
 }
